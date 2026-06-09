@@ -13,7 +13,7 @@ import { useProjectStore } from "@/store/useProjectStore";
 import type { Criteria } from "@/types";
 import { ExportButton } from "./ExportButton";
 import { SensitivitySlider } from "./SensitivitySlider";
-import { GenericResultTab, type GenericResult } from "./GenericResultTab";
+import { GenericResultTab } from "./GenericResultTab";
 import { RadarChart } from "./RadarChart";
 import { ComparisonTab } from "./ComparisonTab";
 

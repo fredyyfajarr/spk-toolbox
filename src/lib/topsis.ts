@@ -85,7 +85,7 @@ export function runTOPSIS(
   });
 
   // 5. Jarak Solusi Ideal Positif (D+) dan Negatif (D-) serta Nilai Preferensi (V)
-  let results: TOPSISResult[] = alternatives.map((alt, rIndex) => {
+  const results: TOPSISResult[] = alternatives.map((alt, rIndex) => {
     const wRow = weighted[rIndex];
     let sumSqPlus = 0;
     let sumSqMinus = 0;

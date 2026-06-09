@@ -64,7 +64,7 @@ export function runSAW(
   });
 
   // 3. Menghitung Nilai Preferensi V
-  let results: SAWResult[] = alternatives.map((alt, rIndex) => {
+  const results: SAWResult[] = alternatives.map((alt, rIndex) => {
     const normRow = normalized[rIndex];
     let score = 0;
     const normalizedMatrix: Record<string, number> = {};

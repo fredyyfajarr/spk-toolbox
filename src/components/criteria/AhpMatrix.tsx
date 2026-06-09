@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import { AlertCircle, CheckCircle2, Calculator } from "lucide-react";
 import { toast } from "sonner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -45,7 +43,7 @@ export function AhpMatrix({ project }: AhpMatrixProps) {
   const setCriteria = useProjectStore((state) => state.setCriteria);
 
   const criteria = project.criteria;
-  const matrix = project.ahpMatrix || {};
+  const matrix = project.ahpMatrix ?? {};
 
   // Membentuk pasangan i < j
   const pairs = useMemo(() => {

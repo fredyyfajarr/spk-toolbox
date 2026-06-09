@@ -47,7 +47,7 @@ export function runWP(
   // 3. Menghitung Vektor V
   const totalS = vectorSValues.reduce((sum, val) => sum + val, 0);
   
-  let results: WPResult[] = alternatives.map((alt, rIndex) => {
+  const results: WPResult[] = alternatives.map((alt, rIndex) => {
     const s = vectorSValues[rIndex];
     const v = totalS === 0 ? 0 : s / totalS;
     

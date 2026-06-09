@@ -15,7 +15,6 @@ import {
 import { formatDate, getWeightTotal, weightIsValid } from "@/lib/utils";
 import { useProjectStore } from "@/store/useProjectStore";
 import type { Project } from "@/types";
-import { cn } from "@/lib/utils";
 import { ProjectModal } from "./ProjectModal";
 
 interface ProjectCardProps {
