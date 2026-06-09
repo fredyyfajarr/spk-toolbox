@@ -41,7 +41,19 @@ export interface MOORASteps {
   alternativeOrder: string[];
 }
 
-export type MethodType = "MOORA" | "SAW" | "TOPSIS" | "AHP" | "WP";
+export type MethodType = 
+  | "MOORA" 
+  | "SAW" 
+  | "TOPSIS" 
+  | "AHP" 
+  | "WP"
+  | "SMART"
+  | "WASPAS"
+  | "ARAS"
+  | "VIKOR"
+  | "EDAS"
+  | "PROMETHEE"
+  | "ELECTRE";
 
 export interface ProjectSnapshot {
   id: string;

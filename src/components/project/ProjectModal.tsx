@@ -19,12 +19,19 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useProjectStore } from "@/store/useProjectStore";
 import type { Project, MethodType } from "@/types";
 
-const AVAILABLE_METHODS: { id: MethodType; label: string }[] = [
-  { id: "MOORA", label: "MOORA" },
-  { id: "SAW", label: "SAW (Simple Additive Weighting)" },
-  { id: "TOPSIS", label: "TOPSIS" },
-  { id: "AHP", label: "AHP (Analytic Hierarchy Process - Bobot)" },
-  { id: "WP", label: "WP (Weighted Product)" },
+const AVAILABLE_METHODS: { id: MethodType; label: string; desc?: string }[] = [
+  { id: "MOORA", label: "MOORA", desc: "Multi-Objective Optimization" },
+  { id: "SAW", label: "SAW", desc: "Simple Additive Weighting" },
+  { id: "TOPSIS", label: "TOPSIS", desc: "Technique for Order Preference" },
+  { id: "WP", label: "WP", desc: "Weighted Product" },
+  { id: "SMART", label: "SMART", desc: "Simple Multi Attribute Rating" },
+  { id: "WASPAS", label: "WASPAS", desc: "Weight Aggregated Sum Product" },
+  { id: "ARAS", label: "ARAS", desc: "Additive Ratio Assessment" },
+  { id: "VIKOR", label: "VIKOR", desc: "Visekriterijumsko Kompromisno" },
+  { id: "EDAS", label: "EDAS", desc: "Evaluation based on Distance" },
+  { id: "PROMETHEE", label: "PROMETHEE II", desc: "Preference Ranking Organization" },
+  { id: "ELECTRE", label: "ELECTRE", desc: "Net Concordance Dominance" },
+  { id: "AHP", label: "AHP", desc: "Analytic Hierarchy Process" },
 ];
 
 interface ProjectModalProps {
@@ -113,12 +120,27 @@ export function ProjectModal({ project }: ProjectModalProps) {
             />
           </div>
           <div className="space-y-3">
-            <Label className="text-muted-foreground">Metode SPK yang Diaktifkan</Label>
-            <div className="grid gap-2 border rounded-md p-4 bg-muted/20">
+            <div className="flex items-center justify-between">
+              <Label className="text-muted-foreground">Metode SPK yang Diaktifkan</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs"
+                onClick={() => setMethods(AVAILABLE_METHODS.map(m => m.id))}
+              >
+                Pilih Semua
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 border rounded-md p-4 bg-muted/10 max-h-[250px] overflow-y-auto">
               {AVAILABLE_METHODS.map((method) => (
-                <div key={method.id} className="flex items-center space-x-2">
+                <div 
+                  key={method.id} 
+                  className={`flex items-start space-x-3 p-3 rounded-md border transition-colors ${methods.includes(method.id) ? 'bg-primary/5 border-primary/30' : 'bg-background hover:bg-muted/50'}`}
+                >
                   <Checkbox 
                     id={`method-${method.id}`} 
+                    className="mt-0.5"
                     checked={methods.includes(method.id)}
                     onCheckedChange={(checked) => {
                       if (checked) {
@@ -128,12 +150,20 @@ export function ProjectModal({ project }: ProjectModalProps) {
                       }
                     }}
                   />
-                  <label
-                    htmlFor={`method-${method.id}`}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                  >
-                    {method.label}
-                  </label>
+                  <div className="flex flex-col gap-1 cursor-pointer" onClick={() => {
+                    if (methods.includes(method.id)) setMethods(methods.filter(m => m !== method.id));
+                    else setMethods([...methods, method.id]);
+                  }}>
+                    <label
+                      htmlFor={`method-${method.id}`}
+                      className="text-sm font-semibold leading-none cursor-pointer"
+                    >
+                      {method.label}
+                    </label>
+                    <span className="text-[11px] text-muted-foreground leading-snug">
+                      {method.desc}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

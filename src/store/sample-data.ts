@@ -80,5 +80,5 @@ export const sampleProject: Project = {
     { alternativeId: "a-laptop-e", criteriaId: "c-baterai", value: 12 },
   ],
   snapshots: [],
-  methods: ["MOORA", "SAW", "TOPSIS", "AHP", "WP"],
+  methods: ["MOORA", "SAW", "TOPSIS", "AHP", "WP", "SMART", "WASPAS", "ARAS", "VIKOR", "EDAS", "PROMETHEE", "ELECTRE"],
 };
