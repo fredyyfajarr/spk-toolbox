@@ -52,8 +52,7 @@ export function CriteriaPage({ projectId }: CriteriaPageProps) {
           <AlertCircle className="size-4" />
           <AlertTitle>Minimal 2 kriteria</AlertTitle>
           <AlertDescription>
-            Tambahkan minimal dua kriteria agar metode MOORA bisa dibandingkan
-            dengan benar.
+            Tambahkan minimal dua kriteria agar metode SPK bisa dibandingkan dengan benar.
           </AlertDescription>
         </Alert>
       )}

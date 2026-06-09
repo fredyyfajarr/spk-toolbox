@@ -1,88 +1,76 @@
 import * as XLSX from "xlsx";
-import { formatNumber } from "@/lib/utils";
-import type { MOORASteps, Project } from "@/types";
+import type { Project } from "@/types";
 
-function addSheet(
-  workbook: XLSX.WorkBook,
-  name: string,
-  rows: (string | number)[][]
-) {
-  const worksheet = XLSX.utils.aoa_to_sheet(rows);
-  XLSX.utils.book_append_sheet(workbook, worksheet, name);
+interface MethodResult {
+  methodName: string;
+  results: { alternativeId: string; rank: number }[];
 }
 
-export function exportProjectToExcel(project: Project, steps: MOORASteps) {
+export function exportProjectToExcel(project: Project, methodResults: MethodResult[]) {
   const workbook = XLSX.utils.book_new();
 
-  addSheet(workbook, "Data Asli", [
-    ["Proyek", project.name],
-    ["Deskripsi", project.description],
+  // 1. Data Alternatif
+  const wsAlternatives = XLSX.utils.aoa_to_sheet([
+    ["Kode", "Nama Alternatif"],
+    ...project.alternatives.map((alt) => [alt.code, alt.name]),
+  ]);
+  XLSX.utils.book_append_sheet(workbook, wsAlternatives, "Alternatif");
+
+  // 2. Data Kriteria
+  const wsCriteria = XLSX.utils.aoa_to_sheet([
+    ["Kode", "Nama Kriteria", "Tipe", "Bobot"],
+    ...project.criteria.map((c) => [c.code, c.name, c.type, c.weight]),
+  ]);
+  XLSX.utils.book_append_sheet(workbook, wsCriteria, "Kriteria");
+
+  // 3. Matriks Keputusan
+  const headerMatrix = ["Alternatif", ...project.criteria.map((c) => c.code)];
+  const dataMatrix = project.alternatives.map((alt) => {
+    const row = [alt.code];
+    project.criteria.forEach((c) => {
+      row.push(project.values[alt.id]?.[c.id] ?? 0);
+    });
+    return row;
+  });
+  const wsMatrix = XLSX.utils.aoa_to_sheet([headerMatrix, ...dataMatrix]);
+  XLSX.utils.book_append_sheet(workbook, wsMatrix, "Matriks Keputusan");
+
+  // 4. Tabel Komparasi Hasil
+  const aggregated = project.alternatives.map(alt => {
+    const ranks = methodResults.map(mr => mr.results.find(r => r.alternativeId === alt.id)?.rank || 0);
+    const avgRank = ranks.reduce((sum, r) => sum + r, 0) / (ranks.length || 1);
+    return { alternative: alt, ranks, avgRank };
+  });
+  aggregated.sort((a, b) => a.avgRank - b.avgRank);
+
+  const headerResult = [
+    "Rank Rata-rata",
+    "Kode Alternatif",
+    "Nama Alternatif",
+    ...methodResults.map((m) => `Rank ${m.methodName}`),
+    "Skor Rata-rata"
+  ];
+  
+  let currentRank = 1;
+  const dataResult = aggregated.map((item) => {
+    const row = [
+      currentRank++,
+      item.alternative.code,
+      item.alternative.name,
+      ...item.ranks,
+      item.avgRank.toFixed(2)
+    ];
+    return row;
+  });
+
+  const wsResult = XLSX.utils.aoa_to_sheet([
+    ["HASIL KOMPARASI METODE SPK"],
     [],
-    ["No", "Kode", "Kriteria", "Tipe", "Bobot"],
-    ...project.criteria.map((criterion, index) => [
-      index + 1,
-      criterion.code,
-      criterion.name,
-      criterion.type,
-      criterion.weight,
-    ]),
-    [],
-    ["Alternatif", ...project.criteria.map((criterion) => criterion.code)],
-    ...project.alternatives.map((alternative, rowIndex) => [
-      `${alternative.code} - ${alternative.name}`,
-      ...steps.originalMatrix[rowIndex],
-    ]),
+    headerResult,
+    ...dataResult,
   ]);
+  XLSX.utils.book_append_sheet(workbook, wsResult, "Hasil Komparasi");
 
-  addSheet(workbook, "Normalisasi", [
-    ["Alternatif", ...project.criteria.map((criterion) => criterion.code)],
-    ...project.alternatives.map((alternative, rowIndex) => [
-      `${alternative.code} - ${alternative.name}`,
-      ...steps.normalizedMatrix[rowIndex].map((value) =>
-        Number(formatNumber(value).replace(",", "."))
-      ),
-    ]),
-  ]);
-
-  addSheet(workbook, "Matriks Terbobot", [
-    ["Alternatif", ...project.criteria.map((criterion) => criterion.code)],
-    ...project.alternatives.map((alternative, rowIndex) => [
-      `${alternative.code} - ${alternative.name}`,
-      ...steps.weightedMatrix[rowIndex].map((value) =>
-        Number(formatNumber(value).replace(",", "."))
-      ),
-    ]),
-  ]);
-
-  addSheet(workbook, "Skor & Ranking", [
-    ["Rank", "Kode", "Alternatif", "Benefit", "Cost", "Yi"],
-    ...steps.results.map((result) => [
-      result.rank,
-      result.alternativeCode,
-      result.alternativeName,
-      result.benefitSum,
-      result.costSum,
-      result.yi,
-    ]),
-  ]);
-
-  const best = steps.results[0];
-  addSheet(workbook, "Ringkasan", [
-    ["Rank", "Alternatif", "Skor Yi", "Rekomendasi"],
-    ...steps.results.map((result) => [
-      result.rank,
-      `${result.alternativeCode} - ${result.alternativeName}`,
-      result.yi,
-      result.rank === 1 ? "Alternatif terbaik" : "",
-    ]),
-    [],
-    [
-      "Kesimpulan",
-      best
-        ? `Alternatif terbaik adalah ${best.alternativeCode} - ${best.alternativeName} dengan skor Yi ${best.yi}.`
-        : "Belum ada hasil.",
-    ],
-  ]);
-
+  // Simpan
   XLSX.writeFile(workbook, `${project.name || "spk-toolbox"}.xlsx`);
 }

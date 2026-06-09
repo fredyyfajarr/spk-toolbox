@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,23 +29,44 @@ export function ResultPage({ projectId }: ResultPageProps) {
     setPreviewCriteria(criteria);
   }, []);
 
+  const activeCriteria = previewCriteria ?? project?.criteria ?? [];
+  const rankingMethods = (project?.methods && project.methods.length > 0 ? project.methods : ["MOORA"]).filter(m => m !== "AHP");
+
+  // Hitung semua hasil metode
+  const methodResults = useMemo(() => {
+    if (!project) return [];
+    const results = [];
+    if (rankingMethods.includes("MOORA")) {
+      results.push({ methodName: "MOORA", results: runMOORA(project.alternatives, activeCriteria, project.values).results });
+    }
+    if (rankingMethods.includes("SAW")) {
+      results.push({ methodName: "SAW", results: runSAW(project.alternatives, activeCriteria, project.values).results });
+    }
+    if (rankingMethods.includes("TOPSIS")) {
+      results.push({ methodName: "TOPSIS", results: runTOPSIS(project.alternatives, activeCriteria, project.values).results });
+    }
+    if (rankingMethods.includes("WP")) {
+      results.push({ methodName: "WP", results: runWP(project.alternatives, activeCriteria, project.values).results });
+    }
+    return results;
+  }, [project, activeCriteria, rankingMethods]);
+
+  // Tetap ambil mooraSteps jika diperlukan untuk RadarChart
+  const mooraSteps = useMemo(() => {
+    if (!project) return null;
+    return rankingMethods.includes("MOORA") 
+      ? runMOORA(project.alternatives, activeCriteria, project.values)
+      : null;
+  }, [project, activeCriteria, rankingMethods]);
+
   if (!project) {
     return null;
   }
 
-  const activeCriteria = previewCriteria ?? project.criteria;
   const ready =
     activeCriteria.length >= 2 &&
     project.alternatives.length >= 2 &&
     weightIsValid(getWeightTotal(activeCriteria));
-
-  // Ambil method yg aktif
-  const methods = project.methods && project.methods.length > 0 ? project.methods : ["MOORA"];
-  const rankingMethods = methods.filter(m => m !== "AHP");
-
-  // Jalankan MOORA (karena ExportButton dan SensitivitySlider dan RadarChart sekarang dependen pada MOORA)
-  // TODO: ExportButton/RadarChart bisa dibuat spesifik, namun untuk sekarang jadikan MOORA default fallback
-  const mooraSteps = runMOORA(project.alternatives, activeCriteria, project.values);
 
   return (
     <div className="space-y-8">
@@ -62,7 +83,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
             Ranking final berdasarkan skor tertinggi untuk setiap metode SPK.
           </p>
         </div>
-        <ExportButton project={{ ...project, criteria: activeCriteria }} steps={mooraSteps} />
+        <ExportButton project={{ ...project, criteria: activeCriteria }} methodResults={methodResults} />
       </div>
 
       {!ready && (
@@ -100,7 +121,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
             )}
           </TabsList>
           
-          {rankingMethods.includes("MOORA") && (
+          {rankingMethods.includes("MOORA") && mooraSteps && (
             <TabsContent value="MOORA" className="mt-0 focus-visible:outline-none">
                <GenericResultTab 
                  methodName="MOORA"
@@ -166,31 +187,10 @@ export function ResultPage({ projectId }: ResultPageProps) {
 
           {rankingMethods.length > 1 && (
             <TabsContent value="KOMPARASI" className="mt-0 focus-visible:outline-none">
-              {(() => {
-                const methodResults = [];
-                if (rankingMethods.includes("MOORA")) {
-                  methodResults.push({ methodName: "MOORA", results: mooraSteps.results });
-                }
-                if (rankingMethods.includes("SAW")) {
-                  const saw = runSAW(project.alternatives, activeCriteria, project.values);
-                  methodResults.push({ methodName: "SAW", results: saw.results });
-                }
-                if (rankingMethods.includes("TOPSIS")) {
-                  const topsis = runTOPSIS(project.alternatives, activeCriteria, project.values);
-                  methodResults.push({ methodName: "TOPSIS", results: topsis.results });
-                }
-                if (rankingMethods.includes("WP")) {
-                  const wp = runWP(project.alternatives, activeCriteria, project.values);
-                  methodResults.push({ methodName: "WP", results: wp.results });
-                }
-
-                return (
-                  <ComparisonTab 
-                    alternatives={project.alternatives}
-                    methodResults={methodResults}
-                  />
-                );
-              })()}
+              <ComparisonTab 
+                alternatives={project.alternatives}
+                methodResults={methodResults}
+              />
             </TabsContent>
           )}
         </Tabs>
