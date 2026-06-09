@@ -317,7 +317,7 @@ export const useProjectStore = create<ProjectStore>()(
       saveToStorage: () => undefined,
     }),
     {
-      name: "spk-moora-projects",
+      name: "spk-toolbox-projects",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         projects: state.projects,

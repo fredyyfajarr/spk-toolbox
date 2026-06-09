@@ -84,5 +84,5 @@ export function exportProjectToExcel(project: Project, steps: MOORASteps) {
     ],
   ]);
 
-  XLSX.writeFile(workbook, `${project.name || "spk-moora"}.xlsx`);
+  XLSX.writeFile(workbook, `${project.name || "spk-toolbox"}.xlsx`);
 }

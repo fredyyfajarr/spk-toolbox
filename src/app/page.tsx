@@ -16,11 +16,11 @@ export default function Home() {
             <span className="flex size-1.5 rounded-full bg-primary mr-2" />
             Sistem Penunjang Keputusan
           </div>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl text-foreground">
-            MOORA Engine
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400 drop-shadow-sm pb-2">
+            SPK Toolbox
           </h1>
-          <p className="mt-3 text-lg text-muted-foreground">
-            Platform analitik cepat untuk pengambilan keputusan multi-kriteria. Kelola proyek, kriteria, alternatif, dan hasil.
+          <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto font-medium">
+            Sistem Penunjang Keputusan All-in-One. Hitung, evaluasi, dan bandingkan hasil dari metode SAW, TOPSIS, MOORA, WP, dan AHP dalam satu platform cerdas.
           </p>
         </div>
         <div className="shrink-0">

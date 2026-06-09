@@ -11,7 +11,7 @@ export function exportProjectToPdf(project: Project, steps: MOORASteps) {
   }).format(new Date());
 
   doc.setFontSize(16);
-  doc.text("LAPORAN SISTEM PENUNJANG KEPUTUSAN", 14, 16);
+  doc.text("SPK Toolbox", 14, 16);
   doc.setFontSize(11);
   doc.text("Metode MOORA (Multi-Objective Optimization by Ratio Analysis)", 14, 24);
   doc.text(`Nama Proyek: ${project.name}`, 14, 34);

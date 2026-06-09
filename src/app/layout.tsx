@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SPK MOORA",
-  description: "Aplikasi Sistem Penunjang Keputusan berbasis metode MOORA",
+  title: "SPK Toolbox",
+  description: "Platform Sistem Penunjang Keputusan All-in-One Multi Metode",
 };
 
 export default function RootLayout({
