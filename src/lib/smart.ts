@@ -11,8 +11,14 @@ export interface SMARTResult {
 export function runSMART(
   alternatives: Alternative[],
   criteria: Criteria[],
-  values: Record<string, Record<string, number>>
+  valuesArr: AlternativeValue[]
 ): { results: SMARTResult[] } {
+  const values: Record<string, Record<string, number>> = {};
+  valuesArr.forEach(v => {
+    if (!values[v.alternativeId]) values[v.alternativeId] = {};
+    values[v.alternativeId][v.criteriaId] = v.value;
+  });
+  
   // 1. Cari min dan max untuk setiap kriteria
   const bounds: Record<string, { min: number; max: number }> = {};
   
@@ -40,7 +46,7 @@ export function runSMART(
       const { min, max } = bounds[c.id];
       let utility = 0;
       
-      if (c.type === "BENEFIT") {
+      if (c.type === "benefit") {
         utility = (val - min) / (max - min);
       } else {
         utility = (max - val) / (max - min);

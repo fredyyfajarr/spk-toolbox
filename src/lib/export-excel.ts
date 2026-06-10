@@ -26,9 +26,10 @@ export function exportProjectToExcel(project: Project, methodResults: MethodResu
   // 3. Matriks Keputusan
   const headerMatrix = ["Alternatif", ...project.criteria.map((c) => c.code)];
   const dataMatrix = project.alternatives.map((alt) => {
-    const row = [alt.code];
+    const row: (string | number)[] = [alt.code];
     project.criteria.forEach((c) => {
-      row.push(project.values[alt.id]?.[c.id] ?? 0);
+      const match = project.values.find(v => v.alternativeId === alt.id && v.criteriaId === c.id);
+      row.push(match?.value ?? 0);
     });
     return row;
   });

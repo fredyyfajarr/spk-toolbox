@@ -11,17 +11,23 @@ export interface VIKORResult {
 export function runVIKOR(
   alternatives: Alternative[],
   criteria: Criteria[],
-  values: Record<string, Record<string, number>>
+  valuesArr: AlternativeValue[]
 ): { results: VIKORResult[] } {
+  const values: Record<string, Record<string, number>> = {};
+  valuesArr.forEach(v => {
+    if (!values[v.alternativeId]) values[v.alternativeId] = {};
+    values[v.alternativeId][v.criteriaId] = v.value;
+  });
+
   // 1. Tentukan f* (best) dan f- (worst)
   const bounds: Record<string, { best: number; worst: number }> = {};
   criteria.forEach(c => {
-    let best = c.type === "BENEFIT" ? -Infinity : Infinity;
-    let worst = c.type === "BENEFIT" ? Infinity : -Infinity;
+    let best = c.type === "benefit" ? -Infinity : Infinity;
+    let worst = c.type === "benefit" ? Infinity : -Infinity;
     
     alternatives.forEach(a => {
       const val = values[a.id]?.[c.id] ?? 0;
-      if (c.type === "BENEFIT") {
+      if (c.type === "benefit") {
         if (val > best) best = val;
         if (val < worst) worst = val;
       } else {

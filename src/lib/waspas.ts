@@ -11,8 +11,14 @@ export interface WASPASResult {
 export function runWASPAS(
   alternatives: Alternative[],
   criteria: Criteria[],
-  values: Record<string, Record<string, number>>
+  valuesArr: AlternativeValue[]
 ): { results: WASPASResult[] } {
+  const values: Record<string, Record<string, number>> = {};
+  valuesArr.forEach(v => {
+    if (!values[v.alternativeId]) values[v.alternativeId] = {};
+    values[v.alternativeId][v.criteriaId] = v.value;
+  });
+
   // 1. Cari min dan max
   const bounds: Record<string, { min: number; max: number }> = {};
   criteria.forEach(c => {
@@ -37,7 +43,7 @@ export function runWASPAS(
       const { min, max } = bounds[c.id];
       let norm = 0;
       
-      if (c.type === "BENEFIT") {
+      if (c.type === "benefit") {
         norm = max === 0 ? 0 : val / max;
       } else {
         norm = val === 0 ? 0 : min / val;

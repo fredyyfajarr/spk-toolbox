@@ -11,8 +11,14 @@ export interface ELECTREResult {
 export function runELECTRE(
   alternatives: Alternative[],
   criteria: Criteria[],
-  values: Record<string, Record<string, number>>
+  valuesArr: AlternativeValue[]
 ): { results: ELECTREResult[] } {
+  const values: Record<string, Record<string, number>> = {};
+  valuesArr.forEach(v => {
+    if (!values[v.alternativeId]) values[v.alternativeId] = {};
+    values[v.alternativeId][v.criteriaId] = v.value;
+  });
+
   // 1. Normalisasi Matriks (seperti TOPSIS)
   const denominators: Record<string, number> = {};
   criteria.forEach(c => {
@@ -62,7 +68,7 @@ export function runELECTRE(
         if (diff > maxTotalDiff) maxTotalDiff = diff;
 
         let isConcordance = false;
-        if (c.type === "BENEFIT") {
+        if (c.type === "benefit") {
           isConcordance = vk >= vl;
         } else {
           isConcordance = vk <= vl;

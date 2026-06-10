@@ -11,8 +11,14 @@ export interface EDASResult {
 export function runEDAS(
   alternatives: Alternative[],
   criteria: Criteria[],
-  values: Record<string, Record<string, number>>
+  valuesArr: AlternativeValue[]
 ): { results: EDASResult[] } {
+  const values: Record<string, Record<string, number>> = {};
+  valuesArr.forEach(v => {
+    if (!values[v.alternativeId]) values[v.alternativeId] = {};
+    values[v.alternativeId][v.criteriaId] = v.value;
+  });
+
   // 1. Average Solution (AV)
   const AV: Record<string, number> = {};
   criteria.forEach(c => {
@@ -40,7 +46,7 @@ export function runEDAS(
       const avg = AV[c.id];
       
       let pda = 0, nda = 0;
-      if (c.type === "BENEFIT") {
+      if (c.type === "benefit") {
         pda = Math.max(0, (val - avg) / avg);
         nda = Math.max(0, (avg - val) / avg);
       } else {

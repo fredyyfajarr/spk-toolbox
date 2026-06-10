@@ -11,16 +11,22 @@ export interface ARASResult {
 export function runARAS(
   alternatives: Alternative[],
   criteria: Criteria[],
-  values: Record<string, Record<string, number>>
+  valuesArr: AlternativeValue[]
 ): { results: ARASResult[] } {
+  const values: Record<string, Record<string, number>> = {};
+  valuesArr.forEach(v => {
+    if (!values[v.alternativeId]) values[v.alternativeId] = {};
+    values[v.alternativeId][v.criteriaId] = v.value;
+  });
+
   // 1. Tentukan A0 (Alternatif Optimal)
   const a0: Record<string, number> = {};
   criteria.forEach(c => {
-    let optimal = c.type === "BENEFIT" ? -Infinity : Infinity;
+    let optimal = c.type === "benefit" ? -Infinity : Infinity;
     alternatives.forEach(a => {
       const val = values[a.id]?.[c.id] ?? 0;
-      if (c.type === "BENEFIT" && val > optimal) optimal = val;
-      if (c.type === "COST" && val < optimal) optimal = val;
+      if (c.type === "benefit" && val > optimal) optimal = val;
+      if (c.type === "cost" && val < optimal) optimal = val;
     });
     a0[c.id] = optimal;
   });
@@ -37,7 +43,7 @@ export function runARAS(
     let sum = 0;
     allValues.forEach(item => {
       const v = item.vals[c.id] ?? 0;
-      if (c.type === "BENEFIT") {
+      if (c.type === "benefit") {
         sum += v;
       } else {
         sum += v === 0 ? 0 : 1 / v;
@@ -51,7 +57,7 @@ export function runARAS(
     normalized[item.id] = {};
     criteria.forEach(c => {
       const v = item.vals[c.id] ?? 0;
-      if (c.type === "BENEFIT") {
+      if (c.type === "benefit") {
         normalized[item.id][c.id] = v / normSums[c.id];
       } else {
         normalized[item.id][c.id] = v === 0 ? 0 : (1 / v) / normSums[c.id];

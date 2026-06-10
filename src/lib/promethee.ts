@@ -11,11 +11,17 @@ export interface PROMETHEEResult {
 export function runPROMETHEE(
   alternatives: Alternative[],
   criteria: Criteria[],
-  values: Record<string, Record<string, number>>
+  valuesArr: AlternativeValue[]
 ): { results: PROMETHEEResult[] } {
+  const values: Record<string, Record<string, number>> = {};
+  valuesArr.forEach(v => {
+    if (!values[v.alternativeId]) values[v.alternativeId] = {};
+    values[v.alternativeId][v.criteriaId] = v.value;
+  });
+
   // 1. Fungsi Preferensi Tipe 1 (Usual Criterion)
-  const getPreference = (diff: number, type: "BENEFIT" | "COST") => {
-    if (type === "BENEFIT") {
+  const getPreference = (diff: number, type: "benefit" | "cost") => {
+    if (type === "benefit") {
       return diff > 0 ? 1 : 0;
     } else {
       return diff < 0 ? 1 : 0;
