@@ -12,7 +12,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-background to-muted/20">
       <main className="flex-1 relative">
         <div className="absolute inset-0 -z-10 h-full w-full bg-white [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] dark:bg-slate-950 dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)] opacity-30" />
-        <div className="container flex flex-col items-center justify-center py-20 text-center relative z-10">
+        <div className="container mx-auto flex flex-col items-center justify-center py-20 text-center relative z-10">
           <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8 shadow-sm backdrop-blur-sm transition-transform hover:scale-105">
             <span className="flex size-2 rounded-full bg-primary mr-2 animate-pulse" />
             12 Metode SPK dalam 1 Aplikasi
