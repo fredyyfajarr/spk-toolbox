@@ -39,42 +39,51 @@ export function ResultPage({ projectId }: ResultPageProps) {
   const activeCriteria = previewCriteria ?? project?.criteria ?? [];
   const rankingMethods = (project?.methods && project.methods.length > 0 ? project.methods : ["MOORA"]).filter(m => m !== "AHP");
 
+  // Normalisasi bobot agar jumlahnya pasti 1 (menutup celah logika bobot tidak valid)
+  const normalizedCriteria = useMemo(() => {
+    const totalW = activeCriteria.reduce((sum, c) => sum + c.weight, 0);
+    return activeCriteria.map(c => ({
+      ...c,
+      weight: totalW > 0 ? c.weight / totalW : 0
+    }));
+  }, [activeCriteria]);
+
   // Hitung semua hasil metode
   const methodResults = useMemo(() => {
-    if (!project) return [];
+    if (!project || project.alternatives.length === 0 || normalizedCriteria.length === 0) return [];
     const results = [];
     if (rankingMethods.includes("MOORA")) {
-      results.push({ methodName: "MOORA", results: runMOORA(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "MOORA", results: runMOORA(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("SAW")) {
-      results.push({ methodName: "SAW", results: runSAW(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "SAW", results: runSAW(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("TOPSIS")) {
-      results.push({ methodName: "TOPSIS", results: runTOPSIS(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "TOPSIS", results: runTOPSIS(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("WP")) {
-      results.push({ methodName: "WP", results: runWP(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "WP", results: runWP(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("SMART")) {
-      results.push({ methodName: "SMART", results: runSMART(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "SMART", results: runSMART(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("WASPAS")) {
-      results.push({ methodName: "WASPAS", results: runWASPAS(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "WASPAS", results: runWASPAS(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("ARAS")) {
-      results.push({ methodName: "ARAS", results: runARAS(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "ARAS", results: runARAS(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("VIKOR")) {
-      results.push({ methodName: "VIKOR", results: runVIKOR(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "VIKOR", results: runVIKOR(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("EDAS")) {
-      results.push({ methodName: "EDAS", results: runEDAS(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "EDAS", results: runEDAS(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("PROMETHEE")) {
-      results.push({ methodName: "PROMETHEE", results: runPROMETHEE(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "PROMETHEE", results: runPROMETHEE(project.alternatives, normalizedCriteria, project.values).results });
     }
     if (rankingMethods.includes("ELECTRE")) {
-      results.push({ methodName: "ELECTRE", results: runELECTRE(project.alternatives, activeCriteria, project.values).results });
+      results.push({ methodName: "ELECTRE", results: runELECTRE(project.alternatives, normalizedCriteria, project.values).results });
     }
     return results;
   }, [project, activeCriteria, rankingMethods]);
@@ -83,7 +92,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
   const mooraSteps = useMemo(() => {
     if (!project) return null;
     return rankingMethods.includes("MOORA") 
-      ? runMOORA(project.alternatives, activeCriteria, project.values)
+      ? runMOORA(project.alternatives, normalizedCriteria, project.values)
       : null;
   }, [project, activeCriteria, rankingMethods]);
 
@@ -171,7 +180,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("SAW") && (
             <TabsContent value="SAW" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runSAW(project.alternatives, activeCriteria, project.values);
+                const steps = runSAW(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="SAW"
@@ -186,7 +195,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("TOPSIS") && (
             <TabsContent value="TOPSIS" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runTOPSIS(project.alternatives, activeCriteria, project.values);
+                const steps = runTOPSIS(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="TOPSIS"
@@ -201,7 +210,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("WP") && (
             <TabsContent value="WP" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runWP(project.alternatives, activeCriteria, project.values);
+                const steps = runWP(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="WP"
@@ -216,7 +225,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("SMART") && (
             <TabsContent value="SMART" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runSMART(project.alternatives, activeCriteria, project.values);
+                const steps = runSMART(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="SMART"
@@ -231,7 +240,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("WASPAS") && (
             <TabsContent value="WASPAS" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runWASPAS(project.alternatives, activeCriteria, project.values);
+                const steps = runWASPAS(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="WASPAS"
@@ -246,7 +255,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("ARAS") && (
             <TabsContent value="ARAS" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runARAS(project.alternatives, activeCriteria, project.values);
+                const steps = runARAS(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="ARAS"
@@ -261,7 +270,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("VIKOR") && (
             <TabsContent value="VIKOR" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runVIKOR(project.alternatives, activeCriteria, project.values);
+                const steps = runVIKOR(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="VIKOR"
@@ -276,7 +285,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("EDAS") && (
             <TabsContent value="EDAS" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runEDAS(project.alternatives, activeCriteria, project.values);
+                const steps = runEDAS(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="EDAS"
@@ -291,7 +300,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("PROMETHEE") && (
             <TabsContent value="PROMETHEE" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runPROMETHEE(project.alternatives, activeCriteria, project.values);
+                const steps = runPROMETHEE(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="PROMETHEE II"
@@ -306,7 +315,7 @@ export function ResultPage({ projectId }: ResultPageProps) {
           {rankingMethods.includes("ELECTRE") && (
             <TabsContent value="ELECTRE" className="mt-0 focus-visible:outline-none">
               {(() => {
-                const steps = runELECTRE(project.alternatives, activeCriteria, project.values);
+                const steps = runELECTRE(project.alternatives, normalizedCriteria, project.values);
                 return (
                   <GenericResultTab 
                     methodName="ELECTRE"
