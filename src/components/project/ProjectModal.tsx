@@ -32,6 +32,7 @@ const AVAILABLE_METHODS: { id: MethodType; label: string; desc?: string }[] = [
   { id: "PROMETHEE", label: "PROMETHEE II", desc: "Preference Ranking Organization" },
   { id: "ELECTRE", label: "ELECTRE", desc: "Net Concordance Dominance" },
   { id: "AHP", label: "AHP", desc: "Analytic Hierarchy Process" },
+  { id: "PROFILE_MATCHING", label: "Profile Matching", desc: "Gap Competency Mapping" },
 ];
 
 interface ProjectModalProps {

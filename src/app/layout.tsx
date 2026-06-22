@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import { Navbar } from "@/components/layout/Navbar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,7 +31,13 @@ export default function RootLayout({
       <body className="min-h-screen bg-background font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" disableTransitionOnChange>
           <TooltipProvider>
-            {children}
+            <Navbar />
+            <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+              {children}
+              <footer className="py-6 mt-auto border-t border-border/40 text-center text-sm text-muted-foreground">
+                &copy; {new Date().getFullYear()} SPK Toolbox. All rights reserved.
+              </footer>
+            </div>
             <Toaster richColors theme="light" />
           </TooltipProvider>
         </ThemeProvider>

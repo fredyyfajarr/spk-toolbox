@@ -6,6 +6,8 @@ export interface Criteria {
   code: string;
   type: CriteriaType;
   weight: number;
+  targetValue?: number; // Needed for Profile Matching
+  factorType?: "core" | "secondary"; // Needed for Profile Matching
 }
 
 export interface Alternative {
@@ -53,7 +55,8 @@ export type MethodType =
   | "VIKOR"
   | "EDAS"
   | "PROMETHEE"
-  | "ELECTRE";
+  | "ELECTRE"
+  | "PROFILE_MATCHING";
 
 export interface ProjectSnapshot {
   id: string;

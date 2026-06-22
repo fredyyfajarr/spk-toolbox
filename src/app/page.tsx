@@ -1,53 +1,62 @@
-"use client";
+import Link from "next/link";
+import { ArrowRight, BarChart3, Layers, Zap } from "lucide-react";
 
-import { FolderOpen } from "lucide-react";
-import { ProjectCard } from "@/components/project/ProjectCard";
-import { ProjectModal } from "@/components/project/ProjectModal";
-import { useProjectStore } from "@/store/useProjectStore";
-
-export default function Home() {
-  const projects = useProjectStore((state) => state.projects);
-
+export default function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
       <main className="flex-1 relative">
         <div className="absolute inset-0 -z-10 h-full w-full bg-white [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] dark:bg-slate-950 dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)] opacity-30" />
-        <div className="container mx-auto flex flex-col items-center justify-center py-20 text-center relative z-10">
-          <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8 shadow-sm backdrop-blur-sm transition-transform hover:scale-105">
-            <span className="flex size-2 rounded-full bg-primary mr-2 animate-pulse" />
-            12 Metode SPK dalam 1 Aplikasi
-          </div>
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-indigo-600 drop-shadow-sm pb-2 animate-in slide-in-from-bottom-3 duration-500">
-            SPK Toolbox
+        
+        {/* Hero Section */}
+        <div className="container mx-auto flex flex-col items-center justify-center pt-32 pb-20 text-center relative z-10 px-4">
+          <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-indigo-600 drop-shadow-sm pb-2 animate-in slide-in-from-bottom-3 duration-500 max-w-5xl">
+            Sistem Penunjang Keputusan Terlengkap
           </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto font-medium animate-in slide-in-from-bottom-4 duration-700">
-            Sistem Penunjang Keputusan terlengkap dan terelegan. Hitung, evaluasi, dan bandingkan secara instan dengan metode <span className="font-bold text-foreground">MOORA, SAW, TOPSIS, WP, AHP, SMART, WASPAS, ARAS, VIKOR, EDAS, PROMETHEE, hingga ELECTRE.</span>
+          <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto font-medium animate-in slide-in-from-bottom-4 duration-700">
+            Hitung, evaluasi, dan bandingkan alternatif secara instan dengan 13 metode SPK termasuk <span className="font-bold text-foreground">Profile Matching, MOORA, SAW, TOPSIS, WP, AHP, SMART, WASPAS, ARAS, VIKOR, EDAS, PROMETHEE, hingga ELECTRE.</span>
           </p>
+          
           <div className="mt-10 shrink-0 flex items-center justify-center animate-in slide-in-from-bottom-5 duration-1000">
-            <ProjectModal />
+            <Link 
+              href="/projects" 
+              className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-primary text-primary-foreground font-medium text-base shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:bg-primary/90 hover:-translate-y-0.5"
+            >
+              Mulai Analisis Sekarang
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-          {projects.length === 0 ? (
-            <section className="flex min-h-[250px] flex-col items-center justify-center rounded-lg border border-border bg-card/50 backdrop-blur-sm p-8 text-center shadow-sm">
-              <FolderOpen className="size-8 text-muted-foreground mb-4" />
-              <h2 className="text-xl font-semibold">Belum Ada Proyek</h2>
-              <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                Mulai dengan membuat proyek keputusan baru di atas. Atur kriteria, bobot, dan alternatif Anda dengan mudah.
-              </p>
-            </section>
-          ) : (
-            <section>
-              <h2 className="mb-6 text-2xl font-bold tracking-tight">Proyek Terbaru Anda</h2>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {projects.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
-                ))}
+        {/* Features Section */}
+        <section className="py-24 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid gap-12 md:grid-cols-3">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Zap className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold">13 Metode SPK</h3>
+                <p className="text-muted-foreground">Mendukung berbagai macam algoritma pengambilan keputusan terbaik, dari metode klasik hingga modern.</p>
               </div>
-            </section>
-          )}
-        </div>
+              
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Layers className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold">Dinamis & Fleksibel</h3>
+                <p className="text-muted-foreground">Kelola kriteria benefit/cost, target profil (Profile Matching), serta bobot yang dapat disesuaikan.</p>
+              </div>
+              
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <BarChart3 className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold">Akurasi & Perbandingan</h3>
+                <p className="text-muted-foreground">Bandingkan hasil dari setiap metode untuk memastikan akurasi dan presisi keputusan Anda.</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
